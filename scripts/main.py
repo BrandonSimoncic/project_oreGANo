@@ -19,23 +19,42 @@ from torchvision.utils import save_image
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
-
-import sys
+import pandas as pd
+import sys, json
 sys.path.append(".")
 from generator import G, Generator
 from discriminator import D, Discriminator
 
 
 
+### PATH = '../input/'
+def preprocessing():
+    with open('../train.json') as json_file:
+        dict_train = json.load(json_file)
+
+    id_ = []
+    cuisine = []
+    ingredients = []
+    for i in range(len(dict_train)):
+        id_.append(dict_train[i]['id'])
+        cuisine.append(dict_train[i]['cuisine'])
+        ingredients.append(dict_train[i]['ingredients'])
+    df = pd.DataFrame({'id':id_, 
+                       'cuisine':cuisine, 
+                       'ingredients':ingredients})
+    print(df.head(10))
+
+    return df
+
 
 ## Parameters ## 
-def set_params():
- EPOCH = 20 # play with me
- LR = 0.001
- criterion = nn.BCELoss()
- optimizerD = optim.Adam(netD.parameters(), lr=LR, betas=(0.5, 0.999))
- optimizerG = optim.Adam(netG.parameters(), lr=LR, betas=(0.5, 0.999))
- return EPOCH, LR, criterion, optimizerD, optimizerG
+def set_params(netD, netG):
+    EPOCH = 20 # play with me
+    LR = 0.001
+    criterion = nn.BCELoss()
+    optimizerD = optim.Adam(netD.parameters(), lr=LR, betas=(0.5, 0.999))
+    optimizerG = optim.Adam(netG.parameters(), lr=LR, betas=(0.5, 0.999))
+    return EPOCH, LR, criterion, optimizerD, optimizerG
 
 def weights_init(m):
     """
@@ -62,10 +81,13 @@ def define_GAN():
 
 def main():
     print("Working")
+    
 
+    dataloader = preprocessing()
     netG, netD = define_GAN()
-    EPOCH, LR, criterion, optimizerD, optimizerG = set_params()
+    EPOCH, LR, criterion, optimizerD, optimizerG = set_params(netD, netG)
 
+    print(dataloader.head(10))
     for epoch in range(EPOCH):
            for i, data in enumerate(dataloader, 0):
 	       # 1st Step: Updating the weights of the neural network of the discriminator
