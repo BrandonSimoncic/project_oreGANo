@@ -27,7 +27,6 @@ from discriminator import D, Discriminator
 
 
 
-### PATH = '../input/'
 def preprocessing():
     with open('../train.json') as json_file:
         dict_train = json.load(json_file)
@@ -68,13 +67,13 @@ def weights_init(m):
         m.bias.data.fill_(0)
 
 def define_GAN():
-# Creating the Generator
- netG = G()
- netG.apply(weights_init)
-# Creating the discriminat
- netD = D()
- netD.apply(weights_init) 
- return netG, netD
+    # Creating the Generator
+    netG = G()
+    netG.apply(weights_init)
+    # Creating the discriminat
+    netD = D()
+    netD.apply(weights_init) 
+    return netG, netD
 
 
 
